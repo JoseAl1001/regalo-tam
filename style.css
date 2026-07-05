@@ -651,47 +651,24 @@ main.main-content {
    8. ADAPTABILIDAD PARA CELULARES (MÓVILES)
    ========================================== */
 @media (max-width: 768px) {
-    
-    /* A. FORZAR LA ROTACIÓN PARA VISTA APAISADA */
-    /* Solo rotamos si el teléfono está en vertical para que se vea extendido */
+    /* Eliminamos cualquier rotación */
     body {
-        transform: rotate(90deg);
-        transform-origin: center;
-        width: 100vh;
-        height: 100vw;
-        transform: rotate(90deg) scale(0.5);
-        position: absolute;
-        top: 0;
-        left: 0;
-        overflow: hidden;
+        transform: none !important;
+        width: 100% !important;
+        height: auto !important;
     }
 
-    /* B. AJUSTES DE DISEÑO PARA QUE EL CONTENIDO SE VEA BIEN AL ROTAR */
-    .timeline-block {
-        flex-direction: column !important;
-        gap: 35px;
+    /* Aseguramos que el video y el contenedor principal se ajusten al ancho del móvil */
+    .video-background-container, 
+    .intro-container, 
+    .timeline-container {
+        width: 100vw !important;
+        height: auto !important; /* Permitimos que el alto crezca según el contenido */
     }
 
-    .timeline-block.seccion-invertida {
-        flex-direction: column !important; 
-    }
-
-    .seccion-invertida .block-content {
-        align-items: center !important;
-        text-align: center !important;
-    }
-    
+    /* Ajustamos el tamaño de fuentes e imágenes para que no se desborden */
     .edit-image {
-        max-height: 380px; 
-    }
-
-    .block-content {
-        align-items: center;
-        text-align: center;
-    }
-
-    .genshin-divider {
-        background: linear-gradient(90deg, transparent, #ebd19b, transparent); 
-        width: 140px;
+        max-width: 90% !important;
+        height: auto !important;
     }
 }
