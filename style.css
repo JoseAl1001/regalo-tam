@@ -651,8 +651,23 @@ main.main-content {
    8. ADAPTABILIDAD PARA CELULARES (MÓVILES)
    ========================================== */
 @media (max-width: 768px) {
+    
+    /* A. FORZAR LA ROTACIÓN PARA VISTA APAISADA */
+    /* Solo rotamos si el teléfono está en vertical para que se vea extendido */
+    body {
+        transform: rotate(90deg);
+        transform-origin: center;
+        width: 100vh;
+        height: 100vw;
+        position: absolute;
+        top: 0;
+        left: 0;
+        overflow: hidden;
+    }
+
+    /* B. AJUSTES DE DISEÑO PARA QUE EL CONTENIDO SE VEA BIEN AL ROTAR */
     .timeline-block {
-        flex-direction: column !important; /* Fuerza a que todo se apile en una sola columna en celular */
+        flex-direction: column !important;
         gap: 35px;
         padding: 10px;
     }
