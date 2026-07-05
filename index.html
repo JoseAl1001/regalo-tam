@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Feliz Cumpleaños Tam! :3</title>
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <div id="pantalla-intro" class="intro-container">
+        <div id="sobre-carta" class="envelope-wrapper">
+            <div class="envelope">
+                <div class="flap"></div>
+                <div class="pocket"></div>
+                <div class="letter">
+                    <p>Para: Tam ✨</p>
+                </div>
+                <div class="sello-click">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C12 2 13 9 13 9C13 9 20 12 20 12C20 12 13 15 13 15C13 15 12 22 12 22C12 22 11 15 11 15C11 15 4 12 4 12C4 12 11 9 11 9C11 2 12 2 12 2Z" fill="#FFF1C2" stroke="#9C7F4F" stroke-width="1.5" stroke-linejoin="round"/>
+                        <circle cx="12" cy="12" r="1.5" fill="#FFFFFF"/>
+                    </svg>
+                </div>
+            </div>
+            <p class="indicador-texto">Haz clic en el sello para abrir</p>
+        </div>
+    </div>
+    
+    <!-- Contenido principal con el video adaptativo -->
+    <main class="main-content">
+        <div class="video-background-container">
+            <video id="video-fondo" muted loop playsinline preload="auto">
+                <source src="assets/video-entrada-2K.webm" type="video/webm" media="(min-width: 1024px)">
+                <source src="assets/video-entrada-2K.mp4" type="video/mp4" media="(min-width: 1024px)">
+                <source src="assets/video-entrada-HD.mp4" type="video/mp4" media="(min-width: 768px)">
+                <source src="assets/video-entrada-720p.mp4" type="video/mp4">
+                Tu navegador no soporta videos.
+            </video>
+            <div class="video-overlay"></div>
+        </div>
+
+        <div id="contenedor-linea-tiempo" class="timeline-container">
+
+    <div id="seccion-2" class="timeline-block item-reveal visible-block">
+        <div class="block-media stamp-effect">
+            <img src="assets/img/edit-1.jfif" alt="Primer edit para Tam" class="edit-image">
+        </div>
+        <div class="block-content">
+            <h3 class="friend-name">De: Yukari</h3>
+            <div class="genshin-divider"></div>
+            <p class="friend-text-1">"Tam, quiero desearte un maravilloso y bonito feliz cumpleaños, para mí fue un gran honor conocerte, eres una persona amable, maravillosa y sincera, eres una gran amiga y por esto, con mis palabras quiero que la pases super bien en este día tan especial para ti con tus seres queridos, que Dios te bendiga y que sigas cumpliendo muchos años más, estaré agradecido siempre de ti."</p>
+        </div>
+    </div>
+
+    <div id="seccion-3" class="timeline-block item-reveal seccion-invertida">
+        <div class="block-media stamp-effect">
+            <img src="assets/img/edit-2.jfif" alt="Imagen de Carmilla con pastel de cumpleaños para Tam" class="edit-image">
+        </div>
+        <div class="block-content">
+            <h3 class="friend-name">De: Angel</h3>
+            <div class="genshin-divider"></div>
+            <p class="friend-text-2">"¡¡Feliz Cumpleaños Tam!! Quiero felicitarte en este día tan especial, porque hoy cumple una de mis mejores amigas y una de las personas más importantes que han llegado a mi vida, espero que la pases de lo mejor con tus seres queridos, que hoy sea un día de dicha para ti, mis mayores deseos para ti y espero poder seguir compartiendo más momentos increíbles juntos en el futuro. :3"</p>
+        </div>
+    </div>
+
+    <div id="seccion-4" class="timeline-block final-gallery-block">
+        <img src="assets/img/happy-birthday.jpg" alt="¡Feliz Cumpleaños Tam!" class="final-birthday-image">
+    </div>
+
+</div>
+    </main>
+
+    <audio id="musica-fondo" loop preload="auto">
+        <source src="assets/musica.mp3" type="audio/mpeg">
+    </audio>
+</body>
+</html>

@@ -1,0 +1,682 @@
+/* ==========================================
+   1. CONFIGURACIONES GENERALES Y RESETEO
+   ========================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #0b0b0b;
+    color: #ffffff;
+    overflow-x: hidden;
+}
+
+main.main-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+/* Bloquear la selección en el texto de instrucción del sello */
+#pantalla-intro p, 
+.instruccion-sello { /* Usa la clase o ID exacta que tenga tu texto de "Haz clic..." */
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none;    /* Firefox */
+    -ms-user-select: none;     /* IE10+/Edge */
+    user-select: none;         /* Estándar (Chrome, Opera, etc.) */
+    cursor: default;           /* Evita que el cursor cambie a modo texto (I-beam) */
+}
+
+/* Bloquear la selección en el destinatario */
+.para-tam { /* Usa la clase o ID exacta que tenga tu texto de "Para: tam" */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: default;
+}
+
+/* ==========================================
+   2. CONTENEDOR Y VIDEO DE FONDO
+   ========================================== */
+.video-background-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.video-background-container video {
+    height: 100vh;
+    width: auto;
+    display: block;
+    border: none;
+}
+
+/* Capa oscura reactiva (Inicia transparente) */
+.video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6); 
+    z-index: 1;
+    opacity: 0;
+    backdrop-filter: blur(0px);
+    -webkit-backdrop-filter: blur(0px);
+    transition: opacity 1.5s ease, backdrop-filter 2.0s ease, -webkit-backdrop-filter 2.0s ease;
+}
+
+/* Activado desde JS pasado el tiempo configurado */
+.video-overlay.oscurecer {
+    opacity: 1;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+/* ==========================================
+   4. PANTALLA DE INTRO Y SOBRE INTERACTIVO (GENSHIN PREMIUM)
+   ========================================== */
+.intro-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: url('assets/img/intro.jpg') no-repeat center center;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    transition: opacity 1.5s ease, visibility 1.5s ease;
+}
+
+@keyframes genshin-float {
+    0% { transform: translateY(0) scale(1); filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4)) drop-shadow(0 0 8px rgba(255, 235, 160, 0.2)); }
+    50% { transform: translateY(-8px) scale(1.01); filter: drop-shadow(0 20px 30px rgba(0,0,0,0.5)) drop-shadow(0 0 25px rgba(255, 235, 160, 0.5)); }
+    100% { transform: translateY(0) scale(1); filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4)) drop-shadow(0 0 8px rgba(255, 235, 160, 0.2)); }
+}
+
+.envelope-wrapper {
+    cursor: pointer;
+    animation: genshin-float 4s infinite ease-in-out;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
+
+/* Capa base trasera del sobre */
+.envelope {
+    position: relative;
+    width: 340px;
+    height: 200px;
+    background-color: #ede5d8;
+    border: 3px solid #bba175;
+    border-radius: 4px;
+    box-shadow: inset 0 0 20px rgba(160, 130, 85, 0.25), 0 15px 35px rgba(0, 0, 0, 0.5);
+    z-index: 1; 
+}
+
+/* Línea fina dorada decorativa de la capa trasera */
+.envelope::before {
+    content: '';
+    position: absolute;
+    top: 6px; left: 6px; right: 6px; bottom: 6px;
+    border: 1px solid rgba(187, 161, 117, 0.4);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Solapa superior interactiva */
+.flap {
+    position: absolute;
+    top: -3px; left: -3px;
+    width: 340px;
+    height: 0;
+    border-left: 170px solid transparent;
+    border-right: 170px solid transparent;
+    border-top: 110px solid #e3dac9; 
+    transform-origin: top;
+    /* CALIBRACIÓN: Ajustado a 0.48s para una respuesta más ágil e impactante */
+    transition: transform 0.48s cubic-bezier(0.25, 1, 0.3, 1); 
+    z-index: 5; 
+    filter: drop-shadow(0 4px 5px rgba(0,0,0,0.25));
+}
+
+.flap::after {
+    content: '';
+    position: absolute;
+    top: -113px; left: -170px;
+    width: 0; height: 0;
+    border-left: 170px solid transparent;
+    border-right: 170px solid transparent;
+    border-top: 110px solid #bba175;
+    z-index: -1;
+    transform: scale(1.02, 1.01);
+}
+
+/* Bolsillo frontal (Tapa la mitad inferior del sobre) */
+.pocket {
+    position: absolute;
+    bottom: -3px; left: -3px;
+    width: 340px;
+    height: 110px;
+    background-color: #ede5d8;
+    border: 3px solid #bba175;
+    border-top: none;
+    z-index: 4; 
+    clip-path: polygon(0% 30%, 15% 0%, 85% 0%, 100% 30%, 100% 100%, 0% 100%);
+}
+
+.pocket::before {
+    content: '';
+    position: absolute;
+    top: 6px; left: 6px; right: 6px; bottom: 6px;
+    border: 1px solid rgba(187, 161, 117, 0.4);
+    clip-path: polygon(0% 30%, 14% 0%, 86% 0%, 100% 30%, 100% 100%, 0% 100%);
+    pointer-events: none;
+}
+
+/* Carta interna (Papel pergamino con tipografía Cinzel) */
+.letter {
+    position: absolute;
+    bottom: 15px; left: 20px;
+    width: 300px;
+    height: 150px;
+    background-color: #faf8f2;
+    border: 1px solid #dfd5c2;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+    z-index: 2; 
+    /* Mantiene los 0.6s originales para que termine de acomodarse suavemente */
+    transition: transform 0.6s cubic-bezier(0.25, 1, 0.3, 1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.letter::before {
+    content: '';
+    position: absolute;
+    top: 5px; left: 5px; right: 5px; bottom: 5px;
+    border: 1px dashed rgba(187, 161, 117, 0.3);
+}
+
+.letter p {
+    color: #4a3f2c;                 
+    font-family: 'Cinzel', serif;   
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: 3px;            
+    text-transform: uppercase;      
+    text-align: center;
+    z-index: 2;
+    text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.5); 
+    transition: color 0.3s ease;
+}
+
+/* Sello con animación de Brillo */
+@keyframes estrella-brillo {
+    0% { transform: translate(-50%, -50%) scale(1); filter: drop-shadow(0 0 6px rgba(255, 241, 194, 0.6)); }
+    50% { transform: translate(-50%, -50%) scale(1.08); filter: drop-shadow(0 0 15px rgba(255, 241, 194, 0.9)); }
+    100% { transform: translate(-50%, -50%) scale(1); filter: drop-shadow(0 0 6px rgba(255, 241, 194, 0.6)); }
+}
+
+.sello-click {
+    position: absolute;
+    top: 95px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 52px;
+    height: 52px;
+    z-index: 6; 
+    cursor: pointer;
+    animation: estrella-brillo 3s infinite ease-in-out;
+    transition: all 0.3s ease;
+}
+
+.sello-click svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.sello-click:hover {
+    transform: translate(-50%, -50%) scale(1.15) rotate(15deg);
+    filter: brightness(1.25) drop-shadow(0 0 20px #fff2c2);
+}
+
+.indicador-texto {
+    color: #ebd19b;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-shadow: 0 3px 10px rgba(0, 0, 0, 0.9);
+    font-family: 'Segoe UI', sans-serif;
+    opacity: 0.85;
+}
+
+/* ==========================================
+   5. CLASES DE ANIMACIÓN (JavaScript)
+   ========================================== */
+.envelope-wrapper.abierto .flap {
+    transform: rotateX(140deg); 
+    z-index: 1; 
+}
+
+.envelope-wrapper.abierto .letter {
+    transform: translateY(-65px);
+    z-index: 3; 
+    
+    /* CALIBRACIÓN INTERLOCKED: Como la tapa acelera más, reducimos el retraso a 0.15s.
+       La carta se acopla casi al instante de forma súper fluida y continua. */
+    transition-delay: 0.15s; 
+}
+
+.envelope-wrapper.abierto .letter p {
+    color: #2c2417;
+}
+
+.intro-container.desvanecer {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none; 
+}
+
+/* ==========================================
+   6. CONTENEDOR DE EDITS Y MENSAJES (LINEA DE TIEMPO)
+   ========================================== */
+.timeline-container {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 1100px; /* Ampliado de 800px a 1100px para dar más espacio a todo */
+    height: 100vh;
+    margin: 0 auto;
+    padding: 40px 25px;
+    overflow-y: auto;
+    
+    /* NUEVO: Sistema de centrado perfecto vertical y horizontal */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centrado vertical */
+    align-items: center;     /* Centrado horizontal */
+    gap: 80px; 
+    
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 2.0s ease, visibility 2.0s ease; 
+}
+
+/* Ocultar la barra de scroll aburrida del navegador (Opcional, estilo premium) */
+.timeline-container::-webkit-scrollbar {
+    width: 6px;
+}
+.timeline-container::-webkit-scrollbar-thumb {
+    background: rgba(235, 209, 155, 0.3); /* Dorado sutil Genshin */
+    border-radius: 10px;
+}
+
+/* Clase que activaremos cuando el sobre se abra */
+.timeline-container.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* ==========================================
+   7. BLOQUES DE LA LÍNEA DE TIEMPO (EDITS Y MENSAJES FLOTANTES)
+   ========================================== */
+
+/* Tarjeta contenedora principal (AHORA SIN FONDO NI BORDES) */
+.timeline-block {
+    display: flex;
+    flex-direction: row; 
+    align-items: center;
+    gap: 55px; /* Un toque más de aire entre elementos */
+    width: 100%;
+    max-width: 1000px; 
+    background: none; /* Eliminamos el fondo */
+    border: none;     /* Eliminamos el borde */
+    border-radius: 0;
+    padding: 20px 0;   /* Ajustamos el espacio ahora que flota libre */
+    box-shadow: none;  /* Eliminamos la sombra de la caja */
+    backdrop-filter: none; /* Eliminamos el desenfoque trasero */
+    transition: transform 0.4s ease;
+}
+
+.timeline-block:hover {
+    transform: translateY(-5px); /* Mantenemos un sutil balanceo al pasar el mouse */
+}
+
+/* Contenedor principal de la estampilla */
+.block-media.stamp-effect {
+    flex: 1.4; /* Aumentamos el tamaño relativo para que el edit sea más grande */
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    
+    /* Reducimos el padding de 24px a 14px para que la imagen aproveche más el espacio */
+    padding: 14px; 
+    
+    /* Filtro de sombra que abraza perfectamente la silueta recortada de los dientes */
+    filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.7));
+}
+
+/* CAPA DE FONDO INTERNA: Ahora muerde hacia afuera correctamente */
+.block-media.stamp-effect::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #ede5d8; /* Color pergamino Genshin */
+    z-index: 1;
+    
+    /* CORRECCIÓN DE MÁSCARA: Crea los semicírculos perfectos en los bordes sin vaciar el centro */
+    -webkit-mask-image: 
+        radial-gradient(circle at 50% -6px, transparent 10px, #000 11px),
+        radial-gradient(circle at 50% calc(100% + 6px), transparent 10px, #000 11px),
+        radial-gradient(circle at -6px 50%, transparent 10px, #000 11px),
+        radial-gradient(circle at calc(100% + 6px) 50%, transparent 10px, #000 11px);
+    -webkit-mask-size: 24px 100%, 24px 100%, 100% 24px, 100% 24px;
+    -webkit-mask-position: 0 0, 0 100%, 0 0, 100% 0;
+    -webkit-mask-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+    -webkit-mask-composite: source-in;
+    
+    mask-image: 
+        radial-gradient(circle at 50% -6px, transparent 10px, #000 11px),
+        radial-gradient(circle at 50% calc(100% + 6px), transparent 10px, #000 11px),
+        radial-gradient(circle at -6px 50%, transparent 10px, #000 11px),
+        radial-gradient(circle at calc(100% + 6px) 50%, transparent 10px, #000 11px);
+    mask-size: 24px 100%, 24px 100%, 100% 24px, 100% 24px;
+    mask-position: 0 0, 0 100%, 0 0, 100% 0;
+    mask-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+    mask-composite: intersect;
+}
+
+/* Línea punteada postal decorativa (Sigue el contorno de forma limpia) */
+.block-media.stamp-effect::after {
+    content: '';
+    position: absolute;
+    top: 8px; left: 8px; right: 8px; bottom: 8px;
+    border: 1.5px dashed #bba175; /* Cambiado a color café/dorado para que combine con Genshin */
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* EL EDIT: Ahora es más grande, nítido y encaja perfectamente en el marco */
+.edit-image {
+    width: 100%;
+    max-height: 520px; /* Aumentamos la altura máxima de 460px a 520px */
+    object-fit: contain; /* Cambiado a contain para que el edit no se corte y se vea entero */
+    border-radius: 2px;
+    border: 2px solid #bba175; /* El marco que une la foto a la estampilla */
+    position: relative;
+    z-index: 3;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
+}
+
+/* Contenedor del texto */
+.block-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Nombre del amigo */
+.friend-name {
+    font-family: 'Cinzel', serif; 
+    color: #ebd19b; 
+    font-size: 1.7rem; 
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+    /* Sombra de texto para contrastar perfectamente con el video */
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8); 
+}
+
+/* Separador de la interfaz */
+.genshin-divider {
+    width: 80px; 
+    height: 3px; 
+    background: linear-gradient(90deg, #ebd19b, transparent);
+    margin-bottom: 20px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+}
+
+/* ==========================================================================
+   PASO 1: DISEÑO DEL PÁRRAFO BASE (.friend-text)
+   ========================================================================== */
+.friend-text-1, 
+.friend-text-2 {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #ffffff;
+    font-size: 1.25rem;
+    line-height: 1.7;
+    font-style: italic;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+    margin-top: 15px;
+    
+    /* El contenedor debe estar siempre activo como bloque para que no herede */
+    /* colapsos de opacidad de las cajas superiores de la línea de tiempo */
+    display: block !important;
+    opacity: 1 !important;
+}
+
+/* ==========================================================================
+   PASO 2 CONFIGURADO: REVELADO POR BARRIDO ÓPTICO (ESTÁTICO)
+   ========================================================================== */
+
+/* Cada palabra individual inicia invisible y con la máscara de barrido al 0% */
+.friend-text-1 span {
+    display: inline-block !important;
+    opacity: 0 !important;       
+    margin-right: 0.28em !important; 
+    
+    /* Preparamos la máscara: un degradado que esconde el contenido hacia la derecha */
+    -webkit-mask-image: linear-gradient(to right, #000 0%, #000 0%, transparent 0%) !important;
+    mask-image: linear-gradient(to right, #000 0%, #000 0%, transparent 0%) !important;
+    
+    /* El tamaño de la máscara cubre todo el contenedor de la palabra */
+    -webkit-mask-size: 100% 100% !important;
+    mask-size: 100% 100% !important;
+
+    /* Transición limpia y fluida solo para la opacidad y la máscara */
+    transition: 
+        opacity 0.4s ease-out,
+        -webkit-mask-image 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+        mask-image 0.6s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        
+    will-change: opacity, mask-image, -webkit-mask-image;
+}
+
+/* Al aplicar la clase 'aparecer', la palabra se vuelve opaca y la máscara se desplaza */
+.friend-text-1 span.aparecer {
+    opacity: 1 !important;
+    
+    /* El degradado avanza suavemente revelando la palabra de izquierda a derecha */
+    -webkit-mask-image: linear-gradient(to right, #000 100%, #000 100%, transparent 100%) !important;
+    mask-image: linear-gradient(to right, #000 100%, #000 100%, transparent 100%) !important;
+}
+
+/* ==========================================================================
+   CONTROL DE SECCIONES NARRATIVAS (SECCIONES 2, 3 Y 4)
+   ========================================================================== */
+
+/* Todos los bloques de la línea de tiempo inician invisibles y colapsados */
+.timeline-block {
+    opacity: 0 !important;
+    display: none !important;
+    transition: opacity 1s ease-in-out !important;
+    width: 100%;
+}
+
+/* Clase para mostrar activamente una sección */
+.timeline-block.visible-block {
+    display: flex !important;
+    opacity: 1 !important;
+}
+
+/* Efecto de desvanecimiento de salida */
+.timeline-block.ocultar-block {
+    opacity: 0 !important;
+}
+
+/* Preparación para tu párrafo (Sección 3) con el mismo barrido horizontal */
+.friend-text-2 span {
+    display: inline-block !important;
+    opacity: 0 !important;       
+    margin-right: 0.28em !important; 
+    -webkit-mask-image: linear-gradient(to right, #000 0%, #000 0%, transparent 0%) !important;
+    mask-image: linear-gradient(to right, #000 0%, #000 0%, transparent 0%) !important;
+    -webkit-mask-size: 100% 100% !important;
+    mask-size: 100% 100% !important;
+    transition: opacity 0.4s ease-out, -webkit-mask-image 0.6s cubic-bezier(0.4, 0, 0.2, 1), mask-image 0.6s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    will-change: opacity, mask-image, -webkit-mask-image;
+}
+
+.friend-text-2 span.aparecer {
+    opacity: 1 !important;
+    -webkit-mask-image: linear-gradient(to right, #000 100%, #000 100%, transparent 100%) !important;
+    mask-image: linear-gradient(to right, #000 100%, #000 100%, transparent 100%) !important;
+}
+
+/* Contenedor maestro: Pantalla completa y base para el fondo duplicado */
+.timeline-block.final-gallery-block {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none !important; /* Elimina la camisa de fuerza de los 1000px */
+    z-index: 999 !important;     /* Frente absoluto */
+    margin: 0 !important;
+    padding: 0 !important;
+    background-color: #000000 !important; /* Base negra de respaldo */
+    
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    overflow: hidden !important;
+    
+    /* Sincronización suave de entrada progresiva */
+    transition: opacity 1.8s ease-in-out !important;
+}
+
+/* Pseudo-elemento que duplica e inyecta la misma imagen de cumpleaños de fondo */
+.timeline-block.final-gallery-block::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    
+    /* Vincula automáticamente la misma imagen final como tapiz de fondo */
+    background-image: inherit !important; 
+    background-image: url('assets/img/happy-birthday.jpg') !important; /* Asegúrate de que apunte a tu ruta real */
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    
+    /* Se expande por completo para cubrir toda la pantalla detrás */
+    background-size: cover !important; 
+    
+    /* El truco de diseño: desenfoque y ligera opacidad para que no compita con la principal */
+    filter: blur(25px) brightness(0.7) !important; 
+    transform: scale(1.1) !important; /* Evita que el borde desenfocado deje ver líneas blancas */
+    z-index: 1 !important;
+}
+
+/* Imagen de Cumpleaños Principal (La que queda nítida al frente) */
+.final-birthday-image {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important; /* Centrado matemático exacto */
+    
+    /* Adaptabilidad estricta: Se ajusta siempre arriba y abajo sin recortarse */
+    width: 100vw !important;
+    height: 100vh !important;
+    object-fit: contain !important; 
+    
+    /* Capa superior para flotar por encima del difuminado */
+    z-index: 2 !important; 
+    
+    /* Reseteo estático estricto */
+    border-radius: 0 !important;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.8) !important; /* Añadimos una sombra sutil para despegarla del fondo */
+    pointer-events: none !important; /* Anula por completo interacciones del mouse */
+}
+
+/* ANULACIÓN DE MOVIMIENTO (:HOVER): Mantiene la composición congelada */
+.timeline-block.final-gallery-block:hover {
+    transform: none !important; 
+}
+
+/* Blindaje extra para evitar herencias de movimiento visual */
+.final-gallery-block:hover .final-birthday-image,
+.final-birthday-image:hover {
+    transform: translate(-50%, -50%) scale(1) !important;
+    transition: none !important;
+}
+
+/* ==========================================================================
+   EFECTO ESPEJO: INVERSIÓN DE ORDEN PARA LA SECCIÓN 3
+   ========================================================================== */
+
+/* En pantallas grandes, obligamos a que el contenido fluya al revés (Texto izquierda, Imagen derecha) */
+.timeline-block.seccion-invertida {
+    flex-direction: row-reverse !important;
+}
+
+/* Alineamos los textos de tu bloque a la izquierda si lo deseas para mejor estética */
+.seccion-invertida .block-content {
+    align-items: flex-start !important;
+    text-align: left !important;
+}
+
+/* ==========================================
+   8. ADAPTABILIDAD PARA CELULARES (MÓVILES)
+   ========================================== */
+@media (max-width: 768px) {
+    .timeline-block {
+        flex-direction: column !important; /* Fuerza a que todo se apile en una sola columna en celular */
+        gap: 35px;
+        padding: 10px;
+    }
+
+    .timeline-block.seccion-invertida {
+        flex-direction: column !important; 
+    }
+
+    .seccion-invertida .block-content {
+        align-items: center !important;
+        text-align: center !important;
+    }
+    
+    .edit-image {
+        max-height: 380px; 
+    }
+
+    .block-content {
+        align-items: center;
+        text-align: center;
+    }
+
+    .genshin-divider {
+        background: linear-gradient(90deg, transparent, #ebd19b, transparent); 
+        width: 140px;
+    }
+}
