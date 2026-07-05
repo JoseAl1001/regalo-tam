@@ -659,6 +659,7 @@ main.main-content {
         transform-origin: center;
         width: 100vh;
         height: 100vw;
+        transform: rotate(90deg) scale(0.5);
         position: absolute;
         top: 0;
         left: 0;
@@ -669,7 +670,6 @@ main.main-content {
     .timeline-block {
         flex-direction: column !important;
         gap: 35px;
-        padding: 10px;
     }
 
     .timeline-block.seccion-invertida {
